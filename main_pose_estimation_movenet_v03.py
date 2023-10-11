@@ -200,8 +200,8 @@ def report_gen(f_img, s_img, b_img):
        btn = st.download_button(
                 label="Download report",
                 data=file,
-                filename="report.pdf",
-                mime=application/octet-stream)
+                filename='report.pdf',
+                mime='application/octet-stream')
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
