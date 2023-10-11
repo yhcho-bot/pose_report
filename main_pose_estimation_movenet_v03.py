@@ -14,6 +14,8 @@ import streamlit as st
 from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
+import easygui
+
 
 SIDE = 1
 FRONT = 0
@@ -190,6 +192,8 @@ def report_gen(f_img, s_img, b_img):
     c.drawInlineImage(back_img, 50, 50, width =None, height=None )
     c.drawString(250, 250, "Back Pose")
     c.showPage()
+    file_absolut_path = easygui.fileopenbox(title='Add File', default="*.*")
+    st.write(file_absolut_path)
     c.save()
 
 class MovenetMPOpenvino:
