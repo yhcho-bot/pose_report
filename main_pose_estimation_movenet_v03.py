@@ -196,11 +196,12 @@ def report_gen(f_img, s_img, b_img):
 #    st.write(file_absolut_path)
     c.save()
     st.write(os.listdir())
-    st.download_button(
+    with open("report.pdf", "rb) as file:
+       btn = st.download_button(
                 label="Download report",
                 data=file,
                 filename="report.pdf",
-                mime=application/pdf)
+                mime=application/octet-stream)
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
