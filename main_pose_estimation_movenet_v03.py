@@ -196,7 +196,7 @@ def report_gen(f_img, s_img, b_img):
 #    st.write(file_absolut_path)
     c.save()
     st.write(os.listdir())
-    with open("report.pdf", "rb) as file:
+    with open("report.pdf", "rb") as file :
        btn = st.download_button(
                 label="Download report",
                 data=file,
