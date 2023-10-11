@@ -175,7 +175,7 @@ def report_img(img):
     return Image.fromarray(img_resize)
 
 def report_gen(f_img, s_img, b_img):
-    c=canvas.Canvas('report.pdf', pagesize= A4)
+    c=canvas.Canvas('/_stcore/report.pdf', pagesize= A4)
     c.drawString(100, 750, "Posture Estimation Result")
     
     front_img = report_img(f_img)
