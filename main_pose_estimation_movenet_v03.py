@@ -572,6 +572,7 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_front = pd.run()
+        st.write(front_upload)
     else:
         col1.image(dumb_photo)
 
@@ -588,6 +589,7 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_side = pd.run()
+        st.write(side_upload)
     else:
         col2.image(dumb_photo)
 
@@ -604,6 +606,7 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_back = pd.run()
+        st.write(back_upload)
     else:
         col1.subheader("Back")
         col1.image(dumb_photo)
