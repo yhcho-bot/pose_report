@@ -175,7 +175,7 @@ def report_img(img):
     return Image.fromarray(img_resize)
 
 def report_gen(f_img, s_img, b_img):
-    c=canvas.Canvas('/_stcore/upload_file/report.pdf', pagesize= A4)
+    c=canvas.Canvas('report.pdf', pagesize= A4)
     c.drawString(100, 750, "Posture Estimation Result")
     
     front_img = report_img(f_img)
@@ -195,6 +195,7 @@ def report_gen(f_img, s_img, b_img):
 #    file_absolut_path = easygui.fileopenbox(title='Add File', default="*.*")
 #    st.write(file_absolut_path)
     c.save()
+    st.write(os.listdir())
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
