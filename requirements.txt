@@ -4,3 +4,4 @@ opencv-python==4.7.0.72
 openvino==2023.0.1
 Pillow==9.4.0
 reportlab==4.0.5
+easygui==0.98.3
