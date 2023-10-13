@@ -235,7 +235,7 @@ def report_gen(f_img, s_img, b_img):
 
     source_file_name = "report.pdf"
     bucket_name = "pose_data"
-    destination_blob_name = ("report")
+    destination_blob_name = ("/report")
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_filename(source_file_name)
