@@ -452,7 +452,7 @@ class MovenetMPOpenvino:
             self.fps.update()               
 
             if self.show_fps:
-               # self.fps.draw(frame, orig=(50,50), size=1, color=(240,180,100))
+                #self.fps.draw(frame, orig=(50,50), size=1, color=(240,180,100))
           
             if photo_mode == FRONT:
                 shoulder_angle, hip_angle, center_up, center_down = front_pose_estimator(keypoints_list)
