@@ -452,7 +452,7 @@ class MovenetMPOpenvino:
             self.fps.update()               
 
             if self.show_fps:
-                self.fps.draw(frame, orig=(50,50), size=1, color=(240,180,100))
+               # self.fps.draw(frame, orig=(50,50), size=1, color=(240,180,100))
           
             if photo_mode == FRONT:
                 shoulder_angle, hip_angle, center_up, center_down = front_pose_estimator(keypoints_list)
@@ -473,8 +473,8 @@ class MovenetMPOpenvino:
                 cv2.line(frame, (center_up_x, center_up_y), (extLine_up_x, extLine_up_y), (255,0,0),2)
                 cv2.line(frame, (center_down_x, center_down_y), (extLine_down_x, extLine_down_y),(255,0,0),2)
                 cv2.line(frame, (center_down_x, center_down_y), (center_up_x, center_up_y),(255,0,0),2)
-                cv2.putText(frame, "shoulder angle %f" %shoulder_angle, (extLine_up_x, extLine_up_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 1, cv2.LINE_AA)                
-                cv2.putText(frame, "hip angle %f" %hip_angle, (extLine_down_x, extLine_down_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 1, cv2.LINE_AA)                
+                cv2.putText(frame, "shoulder angle %f" %shoulder_angle, (extLine_up_x, extLine_up_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2, cv2.LINE_AA)                
+                cv2.putText(frame, "hip angle %f" %hip_angle, (extLine_down_x, extLine_down_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2, cv2.LINE_AA)                
  
             if photo_mode == SIDE:
                 shoulder_mean, hip_mean, ear_mean, neck_angle = side_pose_estimator(keypoints_list)
@@ -496,7 +496,7 @@ class MovenetMPOpenvino:
                 #print(shoulder_mean)
                 cv2.line(frame, (hip_mean_x, hip_mean_y), (extLine_x, extLine_y), (255,0,0),2)
                 cv2.line(frame, (shoulder_mean_x, shoulder_mean_y), (ear_mean_x, ear_mean_y),(255,0,0),2)
-                cv2.putText(frame, "neck angle %f" %neck_angle, (ear_mean_x, ear_mean_y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 1, cv2.LINE_AA)                
+                cv2.putText(frame, "neck angle %f" %neck_angle, (ear_mean_x, ear_mean_y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2, cv2.LINE_AA)                
             # print(shoulder_angle[file_index], hip_angle[file_index])
 
             if photo_mode == BACK :
@@ -518,8 +518,8 @@ class MovenetMPOpenvino:
                 cv2.line(frame, (center_up_x, center_up_y), (extLine_up_x, extLine_up_y), (255,0,0),2)
                 cv2.line(frame, (center_down_x, center_down_y), (extLine_down_x, extLine_down_y),(255,0,0),2)
                 cv2.line(frame, (center_down_x, center_down_y), (center_up_x, center_up_y),(255,0,0),2)
-                cv2.putText(frame, "shoulder angle %f" %shoulder_angle, (extLine_up_x, extLine_up_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 1, cv2.LINE_AA)                
-                cv2.putText(frame, "hip angle %f" %hip_angle, (extLine_down_x, extLine_down_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 1, cv2.LINE_AA)                
+                cv2.putText(frame, "shoulder angle %f" %shoulder_angle, (extLine_up_x, extLine_up_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2, cv2.LINE_AA)                
+                cv2.putText(frame, "hip angle %f" %hip_angle, (extLine_down_x, extLine_down_y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255,0,0), 2, cv2.LINE_AA)                
 
             #cv2.imshow("Movenet", frame)
             if first_run == 1 :
