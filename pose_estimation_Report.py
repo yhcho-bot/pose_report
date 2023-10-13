@@ -198,29 +198,29 @@ def report_gen(f_img, s_img, b_img):
 
     pdf.set_font('Arial', '', 12)
 
-    pdf.image("report_image/shoulder_angle.png", img_left+70, img_top, 20, 15 )
+    pdf.image("report_image/shoulder_angle.jpg", img_left+70, img_top, 20, 15 )
     pdf.set_xy(img_left + 90, img_top)
     pdf.cell(40, 15, "Shoulder angle : ", 1, 0, 'C')
     angle_txt = "%.2f" %np.abs(f_shoulder_angle) + " deg"
     pdf.cell(40, 15, angle_txt , 1, 1, 'C')
 
-    pdf.image("report_image/hip_angle.png", img_left+70, img_top+20, 20, 15 )
+    pdf.image("report_image/hip_angle.jpg", img_left+70, img_top+20, 20, 15 )
     pdf.set_xy(img_left + 90, img_top+20)
     pdf.cell(40, 15, "Hip angle : ", 1, 0, 'C')
     angle_txt = "%.2f" %np.abs(f_hip_angle) + " deg"
     pdf.cell(40, 15, angle_txt, 1, 1, 'C')
 
-    pdf.image("report_image/side_angle.png", img_left+70, side_img_top, 20, 15 )
+    pdf.image("report_image/side_angle.jpg", img_left+70, side_img_top, 20, 15 )
     pdf.set_xy(img_left + 90, side_img_top)   
     pdf.cell(40, 15, "Neck angle : ", 1, 0, 'C')
     pdf.cell(40, 15, "%.2f" %np.abs(neck_angle) + " deg", 1, 1, 'C')
 
-    pdf.image("report_image/shoulder_angle_b.png", img_left+70, back_img_top, 20, 15 )
+    pdf.image("report_image/shoulder_angle_b.jpg", img_left+70, back_img_top, 20, 15 )
     pdf.set_xy(img_left + 90, back_img_top)
     pdf.cell(40, 15, "Shoulder angle : ", 1, 0, 'C')
     pdf.cell(40, 15, "%.2f" %np.abs(b_shoulder_angle)+ " deg", 1, 1, 'C')
 
-    pdf.image("report_image/hip_angle_b.png", img_left+70, back_img_top+20, 20, 15 )
+    pdf.image("report_image/hip_angle_b.jpg", img_left+70, back_img_top+20, 20, 15 )
     pdf.set_xy(img_left + 90, back_img_top+20)
     pdf.cell(40, 15, "Hip angle : ", 1, 0, 'C')
     pdf.cell(40, 15, "%.2f" %np.abs(b_hip_angle) + " deg", 1, 1, 'C')
