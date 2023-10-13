@@ -245,20 +245,6 @@ def report_gen(f_img, s_img, b_img):
     blob = bucket.blob(destination_blob_name)
     blob.upload_from_filename(source_file_name)
 
-    with open("report.pdf", "rb") as file :
-       btn = st.download_button(
-                label="Download report",
-                data=file,
-                file_name='report.pdf',
-                mime='application/octet-stream')
-
-    source_file_name = "report.pdf"
-    bucket_name = "pose_data"
-    destination_blob_name = ("/report/")
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(source_file_name)
-
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
                 xml=DEFAULT_MODEL, 
