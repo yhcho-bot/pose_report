@@ -52,8 +52,8 @@ global frame_front
 global frame_back
 global frame_side
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./master-clock-401202-011af7d31ca3.json"
-client = storage.Client()
+#os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./master-clock-401202-011af7d31ca3.json"
+#client = storage.Client()
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_MODEL = SCRIPT_DIR / "models/movenet_multipose_lightning_256x256_FP32.xml"
@@ -241,9 +241,9 @@ def report_gen(f_img, s_img, b_img):
     source_file_name = "report.pdf"
     bucket_name = "pose_data"
     destination_blob_name = ("/report/")
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(source_file_name)
+   # bucket = client.bucket(bucket_name)
+   # blob = bucket.blob(destination_blob_name)
+   # blob.upload_from_filename(source_file_name)
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
