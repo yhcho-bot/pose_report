@@ -14,8 +14,7 @@ import streamlit as st
 from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-#import easygui
-
+from google.cloud import storage
 
 SIDE = 1
 FRONT = 0
@@ -31,9 +30,11 @@ count = 0
 center_vector=[0.0, 0.0]
 shoulder_vector =[0.0, 0.0]
 hip_vector = [0.0, 0.0]
-#shoulder_angle =0.0
-#hip_angle = 0.0
-#neck_angle =0.0
+f_shoulder_angle =0.0
+f_hip_angle = 0.0
+b_shoulder_angle =0.0
+b_hip_angle = 0.0
+neck_angle =0.0
 
 shoulder_r = [0.0, 0.0]
 shoulder_l = [0.0, 0.0]
@@ -51,28 +52,20 @@ global frame_front
 global frame_back
 global frame_side
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "./master-clock-401202-011af7d31ca3.json"
+client = storage.Client()
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 DEFAULT_MODEL = SCRIPT_DIR / "models/movenet_multipose_lightning_256x256_FP32.xml"
             
 # Dictionary that maps from joint names to keypoint indices.
 KEYPOINT_DICT = {
-    'nose': 0,
-    'left_eye': 1,
-    'right_eye': 2,
-    'left_ear': 3,
-    'right_ear': 4,
-    'left_shoulder': 5,
-    'right_shoulder': 6,
-    'left_elbow': 7,
-    'right_elbow': 8,
-    'left_wrist': 9,
-    'right_wrist': 10,
-    'left_hip': 11,
-    'right_hip': 12,
-    'left_knee': 13,
-    'right_knee': 14,
-    'left_ankle': 15,
-    'right_ankle': 16
+    'nose': 0,     'left_eye': 1,     'right_eye': 2,
+    'left_ear': 3,     'right_ear': 4,     'left_shoulder': 5,
+    'right_shoulder': 6,    'left_elbow': 7,    'right_elbow': 8,
+    'left_wrist': 9,    'right_wrist': 10,    'left_hip': 11,
+    'right_hip': 12,    'left_knee': 13,    'right_knee': 14,
+    'left_ankle': 15,    'right_ankle': 16
 }
 
 # LINES_BODY are used when drawing the skeleton onto the source image. 
@@ -160,48 +153,71 @@ def skelecton_angle(p1, p2, p3):
         theta = theta
     else:
         theta = 2* np.pi - theta 
-    return theta    
+    return theta   
+ 
 def report_img(img):
-    img_w_max = 160
+    img_h_max = 1024
     img_h, img_w = img.shape[:2]
     scale = 1
-    if img_w > img_w_max:
-        scale = img_w_max /img_w
-    print(img_h, img_w)
-    img_h_r = (int)(img_h * scale)
-    print(320, img_h_r)
-    img_resize = cv2.resize(img, (img_w_max, img_h_r))
-    #return Image.fromarray(cv2.cvtColor(img_resize, cv2.COLOR_BGR2RGB)) 
-    return Image.fromarray(img_resize)
+    if img_h > img_h_max:
+        scale = img_h_max /img_h
+    img_w_r = (int)(img_w * scale)
+    img_resize = cv2.resize(img, (img_h_max, img_w_r))
+    #img_resize = img
+    return Image.fromarray(img_resize), img_w/img_h
 
 def report_gen(f_img, s_img, b_img):
     c=canvas.Canvas('report.pdf', pagesize= A4)
-    c.drawString(100, 750, "Posture Estimation Result")
+    c.setFont('Helvetica', 32)
+    c.drawString(100, 760, "Posture Estimation Result")
     
-    front_img = report_img(f_img)
-    side_img = report_img(s_img)
-    back_img = report_img(b_img)
-#    front_img = report_img(frame_front)
-#    side_img = report_img(frame_side)
-#    back_img = report_img(frame_back)
+    img_h = 210
 
-    c.drawInlineImage(front_img, 50, 500, width =None, height=None )
+    front_img, f_scale = report_img(f_img)
+    side_img, s_scale  = report_img(s_img)
+    back_img, b_scale = report_img(b_img)
+
+    c.setFont('Helvetica', 20)
+    i_height =(int)(img_h*f_scale)
+    c.drawInlineImage(front_img, 50, 500, width =i_height, height= img_h )
     c.drawString(250, 700, "Front Pose")
-    c.drawInlineImage(side_img, 50, 275, width =None, height=None )
+
+    c.setFont('Helvetica', 16)
+    c.drawString(250, 680, "shoulder angle : %f" %f_shoulder_angle)
+    c.drawString(250, 660, "hip angle : %f" %f_hip_angle)
+    s_data_01 = "%f" %f_shoulder_angle
+    s_data_02 = "%f" %f_hip_angle
+    table_data =[['Shoulder angle :', s_data_01],['Hip angle : ', s_data_02]]
+
+    i_height =(int)(img_h*s_scale)
+    c.drawInlineImage(side_img, 50, 275, width =i_height, height= img_h )
+    c.setFont('Helvetica', 20)
     c.drawString(250, 475, "Side Pose")
-    c.drawInlineImage(back_img, 50, 50, width =None, height=None )
+    c.setFont('Helvetica', 16)
+    c.drawString(250, 455, "neck angle : %f" %neck_angle)
+    i_height =(int)(img_h*b_scale)
+    c.drawInlineImage(back_img, 50, 50, width =i_height, height=img_h )
+    c.setFont('Helvetica', 20)
     c.drawString(250, 250, "Back Pose")
-    c.showPage()
-#    file_absolut_path = easygui.fileopenbox(title='Add File', default="*.*")
-#    st.write(file_absolut_path)
+    c.setFont('Helvetica', 16)
+    c.drawString(250, 230, "shoulder angle : %f" %b_shoulder_angle)
+    c.drawString(250, 210, "hip angle : %f" %b_hip_angle)
+    c.showPage() 
     c.save()
-    st.write(os.listdir())
+
     with open("report.pdf", "rb") as file :
        btn = st.download_button(
                 label="Download report",
                 data=file,
                 file_name='report.pdf',
                 mime='application/octet-stream')
+
+    source_file_name = "report.pdf"
+    bucket_name = "pose_data"
+    destination_blob_name = ("/report/")
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(source_file_name)
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
@@ -384,6 +400,11 @@ class MovenetMPOpenvino:
         global hip_mean
         global shoulder_mean
         global ear_mean
+        global f_shoulder_angle
+        global f_hip_angle 
+        global b_shoulder_angle
+        global b_hip_angle 
+        global neck_angle
 
         first_run =1
 
@@ -482,6 +503,8 @@ class MovenetMPOpenvino:
                     col1.image(frame)
                     col1.write( "shoulder angle : %f " %shoulder_angle)
                     col1.write( "hip angle      : %f " %hip_angle)
+                    f_shoulder_angle = shoulder_angle
+                    f_hip_angle = hip_angle
                     return frame
                     break
                 elif photo_mode == SIDE :
@@ -495,6 +518,8 @@ class MovenetMPOpenvino:
                     col1.image(frame)
                     col1.write( "shoulder angle : %f " %shoulder_angle)
                     col1.write( "hip angle      : %f " %hip_angle)
+                    b_shoulder_angle = shoulder_angle
+                    b_hip_angle = hip_angle
                     return frame
                 first_run = 0
             #frame_placeholder.image(frame, channels = "BGR")
@@ -579,7 +604,6 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_front = pd.run()
-        st.write(front_upload)
     else:
         col1.image(dumb_photo)
 
@@ -596,7 +620,6 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_side = pd.run()
-        st.write(side_upload)
     else:
         col2.image(dumb_photo)
 
@@ -613,7 +636,6 @@ if __name__ == "__main__":
                     score_thresh=args.score_threshold,
                     output=args.output)
         frame_back = pd.run()
-        st.write(back_upload)
     else:
         col1.subheader("Back")
         col1.image(dumb_photo)
