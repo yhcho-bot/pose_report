@@ -207,25 +207,25 @@ def report_gen(f_img, s_img, b_img):
 
     pdf.set_font('Arial', '', 12)
 
-    pdf.set_xy(img_left + 70, img_top+10)
+    pdf.set_xy(img_left + 70, img_top+2)
     pdf.cell(40, 7.5, "Shoulder angle : ", 1, 0, 'C')
     angle_txt = "%.2f" %np.abs(f_shoulder_angle) + " deg"
     pdf.cell(40, 7.5, angle_txt , 1, 1, 'C')
 
-    pdf.set_xy(img_left + 70, img_top+2)
+    pdf.set_xy(img_left + 70, img_top+10)
     pdf.cell(40, 7.5, "Hip angle : ", 1, 0, 'C')
     angle_txt = "%.2f" %np.abs(f_hip_angle) + " deg"
     pdf.cell(40, 7.5, angle_txt, 1, 1, 'C')
 
-    pdf.set_xy(img_left + 70, side_img_top+10)   
+    pdf.set_xy(img_left + 70, side_img_top+2)   
     pdf.cell(40, 7.5, "Neck angle : ", 1, 0, 'C')
     pdf.cell(40, 7.5, "%.2f" %np.abs(neck_angle) + " deg", 1, 1, 'C')
 
-    pdf.set_xy(img_left + 70, back_img_top+10)
+    pdf.set_xy(img_left + 70, back_img_top+2)
     pdf.cell(40, 7.5, "Shoulder angle : ", 1, 0, 'C')
     pdf.cell(40, 7.5, "%.2f" %np.abs(b_shoulder_angle)+ " deg", 1, 1, 'C')
 
-    pdf.set_xy(img_left + 70, back_img_top+2)
+    pdf.set_xy(img_left + 70, back_img_top+10)
     pdf.cell(40, 7.5, "Hip angle : ", 1, 0, 'C')
     pdf.cell(40, 7.5, "%.2f" %np.abs(b_hip_angle) + " deg", 1, 1, 'C')
 
