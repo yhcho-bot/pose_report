@@ -15,6 +15,7 @@ from PIL import Image
 from google.cloud import storage
 from LBD_Report_Gen import LBD_Report_Gen
 from fpdf import FPDF, Template
+import datetime
 
 SIDE = 1
 FRONT = 0
@@ -224,21 +225,24 @@ def report_gen(f_img, s_img, b_img):
     pdf.cell(40, 15, "Hip angle : ", 1, 0, 'C')
     pdf.cell(40, 15, "%.2f" %np.abs(b_hip_angle) + " deg", 1, 1, 'C')
 
-    pdf.output('report.pdf', 'F')
+    fileNameGen = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    report_fileName = 'report' + fileNameGen +'.pdf'
+    print(report_fileName)
 
-    with open("report.pdf", "rb") as file :
+    pdf.output(report_fileName, 'F')
+
+    with open(report_fileName, "rb") as file :
        btn = st.download_button(
                 label="Download report",
                 data=file,
-                file_name='report.pdf',
+                file_name=report_fileName,
                 mime='application/octet-stream')
-
-    source_file_name = "report.pdf"
-    bucket_name = "pose_data"
-    destination_blob_name = ("/report")
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(source_file_name)
+       source_file_name = report_fileName
+       bucket_name = "pose_data"
+       destination_blob_name = (report_fileName)
+       bucket = client.bucket(bucket_name)
+       blob = bucket.blob(destination_blob_name)
+       blob.upload_from_filename(source_file_name)
 
 class MovenetMPOpenvino:
     def __init__(self, input_src=None,
