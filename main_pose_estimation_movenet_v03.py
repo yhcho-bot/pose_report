@@ -12,9 +12,9 @@ from openvino.inference_engine import IENetwork, IECore
 from Tracker import TrackerIoU, TrackerOKS, TRACK_COLORS
 import streamlit as st
 from PIL import Image
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A4
 from google.cloud import storage
+from LBD_Report_Gen import LBD_Report_Gen
+from fpdf import FPDF, Template
 
 SIDE = 1
 FRONT = 0
@@ -167,43 +167,83 @@ def report_img(img):
     return Image.fromarray(img_resize), img_w/img_h
 
 def report_gen(f_img, s_img, b_img):
-    c=canvas.Canvas('report.pdf', pagesize= A4)
-    c.setFont('Helvetica', 32)
-    c.drawString(100, 760, "Posture Estimation Result")
-    
-    img_h = 210
+    img_h_max = 1024
+    img_h, img_w = img.shape[:2]
+    scale = 1
+    if img_h > img_h_max:
+        scale = img_h_max /img_h
+    img_w_r = (int)(img_w * scale)
+    img_resize = cv2.resize(img, (img_h_max, img_w_r))
+    #img_resize = img
+    return Image.fromarray(img_resize), img_w/img_h
+
+def report_gen(f_img, s_img, b_img):
+    pdf = LBD_Report_Gen()
+    pdf.alias_nb_pages()
+    pdf.add_page()
+            
+    img_h = 70
 
     front_img, f_scale = report_img(f_img)
     side_img, s_scale  = report_img(s_img)
     back_img, b_scale = report_img(b_img)
 
-    c.setFont('Helvetica', 20)
-    i_height =(int)(img_h*f_scale)
-    c.drawInlineImage(front_img, 50, 500, width =i_height, height= img_h )
-    c.drawString(250, 700, "Front Pose")
+    front_img.save("front.jpg")
+    side_img.save("side.jpg")
+    back_img.save("back.jpg")
 
-    c.setFont('Helvetica', 16)
-    c.drawString(250, 680, "shoulder angle : %f" %f_shoulder_angle)
-    c.drawString(250, 660, "hip angle : %f" %f_hip_angle)
-    s_data_01 = "%f" %f_shoulder_angle
-    s_data_02 = "%f" %f_hip_angle
-    table_data =[['Shoulder angle :', s_data_01],['Hip angle : ', s_data_02]]
+    img_left = 30
+    img_top = 40
+    img_gap = 14
+    side_img_top = img_top + img_gap + img_h
+    back_img_top = side_img_top + img_gap + img_h
+    pdf.set_font('Arial', 'BU', 15)
+    pdf.text(img_left - 10, img_top - 5, "Front Posture Analysis")
+    pdf.image("front.jpg", img_left, img_top, f_scale * img_h, img_h)
+    pdf.text(img_left - 10, side_img_top - 5, "Side Posture Analysis")
+    pdf.image("side.jpg", img_left, side_img_top, s_scale * img_h, img_h) 
+    pdf.text(img_left - 10, back_img_top - 5, "Back Posture Analysis")
+    pdf.image("back.jpg", img_left, back_img_top, b_scale * img_h, img_h)
 
-    i_height =(int)(img_h*s_scale)
-    c.drawInlineImage(side_img, 50, 275, width =i_height, height= img_h )
-    c.setFont('Helvetica', 20)
-    c.drawString(250, 475, "Side Pose")
-    c.setFont('Helvetica', 16)
-    c.drawString(250, 455, "neck angle : %f" %neck_angle)
-    i_height =(int)(img_h*b_scale)
-    c.drawInlineImage(back_img, 50, 50, width =i_height, height=img_h )
-    c.setFont('Helvetica', 20)
-    c.drawString(250, 250, "Back Pose")
-    c.setFont('Helvetica', 16)
-    c.drawString(250, 230, "shoulder angle : %f" %b_shoulder_angle)
-    c.drawString(250, 210, "hip angle : %f" %b_hip_angle)
-    c.showPage() 
-    c.save()
+    pdf.set_font('Arial', '', 12)
+
+    pdf.set_xy(img_left + 70, img_top+10)
+    pdf.cell(40, 7.5, "Shoulder angle : ", 1, 0, 'C')
+    angle_txt = "%.2f" %np.abs(f_shoulder_angle) + " deg"
+    pdf.cell(40, 7.5, angle_txt , 1, 1, 'C')
+
+    pdf.set_xy(img_left + 70, img_top+2)
+    pdf.cell(40, 7.5, "Hip angle : ", 1, 0, 'C')
+    angle_txt = "%.2f" %np.abs(f_hip_angle) + " deg"
+    pdf.cell(40, 7.5, angle_txt, 1, 1, 'C')
+
+    pdf.set_xy(img_left + 70, side_img_top+10)   
+    pdf.cell(40, 7.5, "Neck angle : ", 1, 0, 'C')
+    pdf.cell(40, 7.5, "%.2f" %np.abs(neck_angle) + " deg", 1, 1, 'C')
+
+    pdf.set_xy(img_left + 70, back_img_top+10)
+    pdf.cell(40, 7.5, "Shoulder angle : ", 1, 0, 'C')
+    pdf.cell(40, 7.5, "%.2f" %np.abs(b_shoulder_angle)+ " deg", 1, 1, 'C')
+
+    pdf.set_xy(img_left + 70, back_img_top+2)
+    pdf.cell(40, 7.5, "Hip angle : ", 1, 0, 'C')
+    pdf.cell(40, 7.5, "%.2f" %np.abs(b_hip_angle) + " deg", 1, 1, 'C')
+
+    pdf.output('report.pdf', 'F')
+
+    with open("report.pdf", "rb") as file :
+       btn = st.download_button(
+                label="Download report",
+                data=file,
+                file_name='report.pdf',
+                mime='application/octet-stream')
+
+    source_file_name = "report.pdf"
+    bucket_name = "pose_data"
+    destination_blob_name = ("/report/")
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_filename(source_file_name)
 
     with open("report.pdf", "rb") as file :
        btn = st.download_button(
@@ -641,7 +681,7 @@ if __name__ == "__main__":
         col1.image(dumb_photo)
 
     with st.sidebar:
-        if st.button("Report Save"):
+        if st.button("[  Report Save  ]"):
             report_gen(frame_front, frame_side, frame_back)
     
     
