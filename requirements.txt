@@ -4,3 +4,4 @@ opencv-python==4.7.0.72
 openvino==2023.0.1
 Pillow==9.4.0
 fpdf==1.7.2
+google-cloud-storage==2.11.0
